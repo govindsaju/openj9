@@ -22,7 +22,7 @@
 
 #if !defined(BYTECODEINTERPRETER_HPP_)
 #define BYTECODEINTERPRETER_HPP_
-
+#include<stdio.h>
 #include "j9.h"
 #include "j9cfg.h"
 #include "j9protos.h"
@@ -147,6 +147,11 @@ private:
 #endif
 	MM_ObjectAllocationAPI _objectAllocate;
 	MM_ObjectAccessBarrierAPI _objectAccessBarrier;
+
+	UDATA _numNullChecks = 0;
+	UDATA _numTrueNulls = 0;
+	UDATA _numNonNullChecks = 0;
+	UDATA _numTrueNotNulls = 0;
 
 protected:
 
@@ -6952,9 +6957,12 @@ done:
 	VMINLINE VM_BytecodeAction
 	ifnull(REGISTER_ARGS_LIST)
 	{
+		
 		VM_BytecodeAction rc = EXECUTE_BYTECODE;
 		U_8 *profilingCursor = startProfilingRecord(REGISTER_ARGS, sizeof(U_8));
+		_numNullChecks++;
 		if (*_sp++ == 0) {
+			_numTrueNulls++;
 			_pc += *(I_16*)(_pc + 1);
 			if (NULL != profilingCursor) {
 				*profilingCursor = 1;
@@ -6975,7 +6983,9 @@ done:
 	{
 		VM_BytecodeAction rc = EXECUTE_BYTECODE;
 		U_8 *profilingCursor = startProfilingRecord(REGISTER_ARGS, sizeof(U_8));
+		_numNonNullChecks++;
 		if (*_sp++ != 0) {
+			_numTrueNotNulls++;
 			_pc += *(I_16*)(_pc + 1);
 			if (NULL != profilingCursor) {
 				*profilingCursor = 1;
@@ -10689,6 +10699,8 @@ noUpdate:
 			break;
 		}
 #endif
+		printf("%lu out of %lu null checks\n", _numTrueNulls , _numNullChecks);
+		printf("%lu out of %lu non null checks\n", _numTrueNotNulls, _numNonNullChecks);
 		return _nextAction;
 	}
 
