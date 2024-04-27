@@ -48,7 +48,7 @@
 #endif
 
 #undef TRACE_TRANSITIONS
-
+#define TRACE_TRANSITIONS
 #if defined(TRACE_TRANSITIONS)
 #include "bcnames.h"
 #include "rommeth.h"

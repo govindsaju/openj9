@@ -10699,8 +10699,11 @@ noUpdate:
 			break;
 		}
 #endif
-		printf("%lu out of %lu null checks\n", _numTrueNulls , _numNullChecks);
-		printf("%lu out of %lu non null checks\n", _numTrueNotNulls, _numNonNullChecks);
+
+#if defined(TRACE_TRANSITIONS)
+		j9tty_printf(PORTLIB, "%lu out of %lu null checks\n", _numTrueNulls , _numNullChecks);
+		j9tty_printf(PORTLIB, "%lu out of %lu non null checks\n", _numTrueNotNulls, _numNonNullChecks);
+#endif
 		return _nextAction;
 	}
 
