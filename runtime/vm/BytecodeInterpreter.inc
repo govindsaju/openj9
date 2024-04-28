@@ -48,8 +48,8 @@
 #endif
 
 #undef TRACE_TRANSITIONS
-#define TRACE_TRANSITIONS
-#if defined(TRACE_TRANSITIONS)
+#define TRACE_NULLCHECK_TRANSITIONS
+#if defined(TRACE_TRANSITIONS) || defined(TRACE_NULLCHECK_TRANSITIONS)
 #include "bcnames.h"
 #include "rommeth.h"
 
@@ -79,7 +79,7 @@ getMethodName(J9PortLibrary *PORTLIB, J9Method *method, U_8 *pc, char *buffer)
 			if ((UDATA)method->constantPool & J9_STARTPC_JNI_NATIVE) {
 				strcat(buffer, "JNI ");
 			} else {
-				strcat(buffer, "INL ");			
+				strcat(buffer, "INL ");
 			}
 		}
 		if (0 == ((UDATA)method->extra & 1)) {
