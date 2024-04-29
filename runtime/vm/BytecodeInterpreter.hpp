@@ -148,10 +148,12 @@ private:
 	MM_ObjectAllocationAPI _objectAllocate;
 	MM_ObjectAccessBarrierAPI _objectAccessBarrier;
 
+#if defined(TRACE_TRANSITIONS)
 	UDATA _numNullChecks = 0;
 	UDATA _numTrueNulls = 0;
 	UDATA _numNonNullChecks = 0;
 	UDATA _numTrueNotNulls = 0;
+#endif
 
 protected:
 
@@ -6960,7 +6962,9 @@ done:
 
 		VM_BytecodeAction rc = EXECUTE_BYTECODE;
 		U_8 *profilingCursor = startProfilingRecord(REGISTER_ARGS, sizeof(U_8));
+#if defined(TRACE_TRANSITIONS)
 		_numNullChecks++;
+#endif
 #if defined(TRACE_NULLCHECK_TRANSITIONS)
 		// borrowed from above j9tty_printf's under VM_BytecodeAction
 		char currentMethodName[1024];
@@ -6969,7 +6973,9 @@ done:
         j9tty_printf(PORTLIB, "CS6004: ifnull on %s\n", currentMethodName);
 #endif /* TRACE_NULLCHECK_TRANSITIONS */
 		if (*_sp++ == 0) {
+#if defined(TRACE_TRANSITIONS)
 			_numTrueNulls++;
+#endif
 			_pc += *(I_16*)(_pc + 1);
 			if (NULL != profilingCursor) {
 				*profilingCursor = 1;
@@ -6990,7 +6996,9 @@ done:
 	{
 		VM_BytecodeAction rc = EXECUTE_BYTECODE;
 		U_8 *profilingCursor = startProfilingRecord(REGISTER_ARGS, sizeof(U_8));
+#if defined(TRACE_TRANSITIONS)
 		_numNonNullChecks++;
+#endif
 #if defined(TRACE_NULLCHECK_TRANSITIONS)
 		char currentMethodName[1024];
 		PORT_ACCESS_FROM_JAVAVM(_vm);
@@ -6998,7 +7006,9 @@ done:
         j9tty_printf(PORTLIB, "CS6004: ifnonnull on %s\n", currentMethodName);
 #endif /* TRACE_NULLCHECK_TRANSITIONS */
 		if (*_sp++ != 0) {
+#if defined(TRACE_TRANSITIONS)
 			_numTrueNotNulls++;
+#endif
 			_pc += *(I_16*)(_pc + 1);
 			if (NULL != profilingCursor) {
 				*profilingCursor = 1;
